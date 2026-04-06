@@ -151,7 +151,7 @@ export default function PreviewToolbar({
       {/* 줌 */}
       <div className="ml-auto flex items-center gap-2">
         <button onClick={onZoomOut} className="w-7 h-7 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center justify-center">−</button>
-        <span className="text-xs text-gray-500 w-10 text-center">{Math.round(zoom * 100)}%</span>
+        <span className="text-xs text-gray-500 w-12 text-center">{Math.round(zoom * 100)}%</span>
         <button onClick={onZoomIn} className="w-7 h-7 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center justify-center">+</button>
       </div>
     </div>
