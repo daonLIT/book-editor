@@ -1,27 +1,38 @@
-// MVP: 글자 수 기준 단순 페이지 분할
+// HTML 콘텐츠에서 텍스트만 추출
+function extractText(html: string): string {
+  return html.replace(/<[^>]*>/g, '');
+}
+
+// HTML을 블록 단위(<p>, <h1~3>)로 분리
+function splitHtmlBlocks(html: string): string[] {
+  if (!html.trim()) return [];
+  // 블록 태그 기준으로 분리
+  const blocks = html.split(/(?=<(?:p|h[1-3])[^>]*>)/i).filter(Boolean);
+  return blocks.length ? blocks : [html];
+}
+
 const CHARS_PER_PAGE = 600;
 
-export function paginateText(text: string): string[] {
-  if (!text.trim()) return [''];
+export function paginateHtml(html: string): string[] {
+  if (!html.trim()) return [''];
 
+  const blocks = splitHtmlBlocks(html);
   const pages: string[] = [];
-  // 문단 단위로 우선 분리
-  const paragraphs = text.split(/\n\n+/);
   let currentPage = '';
+  let currentLength = 0;
 
-  for (const paragraph of paragraphs) {
-    const candidate = currentPage ? currentPage + '\n\n' + paragraph : paragraph;
-    if (candidate.length > CHARS_PER_PAGE && currentPage) {
+  for (const block of blocks) {
+    const blockText = extractText(block);
+    if (currentLength + blockText.length > CHARS_PER_PAGE && currentPage) {
       pages.push(currentPage);
-      currentPage = paragraph;
+      currentPage = block;
+      currentLength = blockText.length;
     } else {
-      currentPage = candidate;
+      currentPage += block;
+      currentLength += blockText.length;
     }
   }
 
-  if (currentPage) {
-    pages.push(currentPage);
-  }
-
+  if (currentPage) pages.push(currentPage);
   return pages.length ? pages : [''];
 }
