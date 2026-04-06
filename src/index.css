@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-page {
+    break-after: page;
+    margin: 0;
+    padding: 15mm 20mm;
+    width: 148mm;
+    min-height: 210mm;
+    box-sizing: border-box;
+    font-size: 10pt;
+    line-height: 1.8;
+  }
+
+  @page {
+    size: A5;
+    margin: 0;
+  }
+}
