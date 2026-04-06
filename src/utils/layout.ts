@@ -101,12 +101,6 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;');
 }
 
-const TAG: Record<Annotation['type'], string> = {
-  bold: 'b',
-  italic: 'i',
-  underline: 'u',
-};
-
 /**
  * plain text 문단에 annotations 적용 → HTML 문자열
  */
@@ -118,26 +112,45 @@ export function applyAnnotations(
   const relevant = annotations.filter((a) => a.range.paragraphIndex === paraIdx);
   if (!relevant.length) return escapeHtml(text);
 
-  // 각 주석을 열기/닫기 이벤트로 분해
   interface Event {
     pos: number;
     open: boolean;
-    type: Annotation['type'];
-    id: string;
+    ann: Annotation;
   }
   const events: Event[] = [];
   for (const ann of relevant) {
-    events.push({ pos: ann.range.start, open: true, type: ann.type, id: ann.id });
-    events.push({ pos: ann.range.end, open: false, type: ann.type, id: ann.id });
+    events.push({ pos: ann.range.start, open: true, ann });
+    events.push({ pos: ann.range.end, open: false, ann });
   }
   events.sort((a, b) => a.pos - b.pos || (a.open ? -1 : 1));
+
+  function openTag(ann: Annotation): string {
+    switch (ann.type) {
+      case 'bold':      return '<b>';
+      case 'italic':    return '<i>';
+      case 'underline': return '<u>';
+      case 'highlight':
+        return `<mark style="background:${ann.color ?? '#fef08a'};padding:0 1px;border-radius:2px;">`;
+      case 'comment':
+        return `<span data-comment-id="${ann.id}" style="border-bottom:2px dotted #f59e0b;cursor:pointer;">`;
+    }
+  }
+
+  function closeTag(ann: Annotation): string {
+    switch (ann.type) {
+      case 'bold':      return '</b>';
+      case 'italic':    return '</i>';
+      case 'underline': return '</u>';
+      case 'highlight': return '</mark>';
+      case 'comment':   return '</span>';
+    }
+  }
 
   let result = '';
   let lastPos = 0;
   for (const ev of events) {
     result += escapeHtml(text.slice(lastPos, ev.pos));
-    const tag = TAG[ev.type];
-    result += ev.open ? `<${tag}>` : `</${tag}>`;
+    result += ev.open ? openTag(ev.ann) : closeTag(ev.ann);
     lastPos = ev.pos;
   }
   result += escapeHtml(text.slice(lastPos));

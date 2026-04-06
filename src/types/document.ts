@@ -12,8 +12,10 @@ export interface TextRange {
 
 export interface Annotation {
   id: string;
-  type: 'bold' | 'italic' | 'underline';
+  type: 'bold' | 'italic' | 'underline' | 'highlight' | 'comment';
   range: TextRange;
+  color?: string;       // highlight 색상 (예: '#fef08a')
+  commentText?: string; // comment 내용
 }
 
 export interface ImageInsertion {

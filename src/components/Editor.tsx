@@ -41,9 +41,9 @@ export default function Editor({ chapter, onUpdateContent, onUpdateTitle }: Prop
       return;
     }
 
-    // Enter → 커서가 두 따옴표 사이에 있으면 닫는 따옴표 밖으로 탈출
+    // Enter → 닫는 따옴표 바로 앞에 커서가 있으면 따옴표 밖으로 탈출
     if (e.key === 'Enter' && !e.shiftKey) {
-      if (value[ss - 1] === '"' && value[ss] === '"') {
+      if (value[ss] === '"') {
         e.preventDefault();
         setPendingCursor(ss + 1);
       }

@@ -19,6 +19,7 @@ export default function App() {
     updateBookTitle,
     addChapter,
     addAnnotation,
+    removeAnnotation,
     addImage,
     removeImage,
   } = useDocument();
@@ -78,6 +79,7 @@ export default function App() {
               onAddAnnotation={addAnnotation}
               onAddImage={addImage}
               onRemoveImage={removeImage}
+              onRemoveAnnotation={removeAnnotation}
             />
           )
         ) : (
